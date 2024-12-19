@@ -1,6 +1,7 @@
 "use client";
 
 import CategoryBar from "@/components/CategoryBar/CategoryBar";
+import ItemsForSellList from "@/components/ItemsForSellList/ItemsForSellList";
 import { useEffect } from "react";
 
 
@@ -11,6 +12,7 @@ const Home = () => {
   return (
     <div>
       <CategoryBar />
+      <ItemsForSellList />
     </div>
   );
 }
