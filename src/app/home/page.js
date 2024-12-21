@@ -2,17 +2,19 @@
 
 import CategoryBar from "@/components/CategoryBar/CategoryBar";
 import ItemsForSellList from "@/components/ItemsForSellList/ItemsForSellList";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 
 const Home = () => {
+  const [category, setCategory] = useState("");
+  
   useEffect(() => {
     document.title = 'Any$ell | Home';
   }, []);
   return (
     <div>
-      <CategoryBar />
-      <ItemsForSellList />
+      <CategoryBar setCategory={setCategory} />
+      <ItemsForSellList category={category} />
     </div>
   );
 }

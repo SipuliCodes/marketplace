@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import '@fortawesome/fontawesome-svg-core/styles.css';
 
-const CategoryBarItem = ({icon, name, id}) => {
+const CategoryBarItem = ({setCategory, icon, name, id}) => {
   const handleClick = () => {
-    console.log(id)
+    setCategory(id);
   }
 
   return (
