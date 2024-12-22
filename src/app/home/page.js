@@ -13,7 +13,7 @@ const Home = () => {
   }, []);
   return (
     <div>
-      <CategoryBar setCategory={setCategory} />
+      <CategoryBar setCategory={setCategory} categoryValue={category} />
       <ItemsForSellList category={category} />
     </div>
   );
