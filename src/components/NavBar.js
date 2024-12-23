@@ -2,6 +2,7 @@
 
 import { signIn, signOut, useSession } from 'next-auth/react';
 import Link from 'next/link';
+import ToggleTheme from './ToggleTheme';
 
 const Navbar = () => {
   const { status } = useSession();
@@ -17,15 +18,18 @@ const Navbar = () => {
   return (
     <nav className="bg-blue-800 p-4">
       <div className="max-w-7xl mx-auto flex justify-between items-center">
-        <Link
-          className="text-white text-2xl font-bold hover:text-gray-300"
-          href="/"
-        >
-          Any$ell
-        </Link>
+        <div className="flex space-x-6">
+          <Link
+            className="text-white text-2xl font-bold hover:text-gray-300"
+            href="/"
+          >
+            Any$ell
+          </Link>
+          <ToggleTheme />
+        </div>
 
         {status === 'unauthenticated' && (
-          <div className=" md:flex space-x-6">
+          <div className="flex space-x-6">
             <button
               onClick={handleSignIn}
               className="hover:text-gray-300 text-white"
@@ -41,7 +45,7 @@ const Navbar = () => {
           </div>
         )}
         {status === 'authenticated' && (
-          <div className=" md:flex space-x-6">
+          <div className="flex space-x-6">
             <button
               onClick={handleSignOut}
               className="hover:text-gray-300 text-white"

@@ -5,7 +5,6 @@ const CategoryBarItem = ({category, setCategory, icon, name, id}) => {
   const handleClick = () => {
     setCategory(id);
   }
-  console.log(category)
 
   return (
     <button
