@@ -7,7 +7,11 @@ const useTheme = () => {
         return savedTheme;
       }
 
-      return window.matchMedia("(prefers-colors-scheme: dark)").matches ? "dark" : "light";
+      const theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+      : 'light';
+    console.log(theme);
+    return theme;
     })
 
   useEffect(() => {
