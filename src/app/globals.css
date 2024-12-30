@@ -5,11 +5,21 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  --border-color: #d1d5db;
+  --select-background: white;
+  --select-border-color: black;
+  --hover-color: #1E40AF;
+  --text-hover-color: white;
 }
 
 [data-theme="dark"] {
     --background: #0a0a0a;
     --foreground: #ededed;
+    --border-color: #4b5563;
+    --select-background: #3F3F46;
+    --select-border-color: white;
+    --hover-color: black;
+    --text-hover-color: white;
 }
 
 body {
