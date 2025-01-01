@@ -60,8 +60,39 @@ const SellProduct = () => {
     name: "pics"
   })
 
+  const postProduct = async (formData, jsonData) => {
+    try {
+      for (const key in jsonData) {
+        formData.append(key, JSON.stringify(jsonData[key]))
+      }
+
+      const response = await fetch('http://localhost:3000/api/products', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const onSubmit = (data) => {
-    console.log(data)
+    const formData = new FormData;
+
+    data.pics.map((pic, index) => {
+      formData.append(`pics[${index}]`, pic.file)
+    })
+
+    data.attributes.map((attribute, index) => {
+      formData.append(`attributes[${index}][key]`, attribute.key);
+      formData.append(`attributes[${index}][value]`, attribute.value);
+    })
+
+    const { pics, attributes, ...otherData } = data;
+
+    postProduct(formData, otherData)
   }
 
   const handleUpload = (e) => {
