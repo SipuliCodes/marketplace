@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { queryProducts } from "@/lib/services/productService";
+import { handleAddProduct, queryProducts } from "@/lib/services/productService";
 
 export async function GET(request) {
   try {
@@ -20,7 +20,6 @@ export async function GET(request) {
 export async function POST(request) {
   try {
     const formData = await request.formData();
-    const body = Object.fromEntries(formData);
 
     const attributeEntries = Array.from(formData.entries()).filter(([key]) => key.startsWith('attributes['));
 
@@ -40,11 +39,31 @@ export async function POST(request) {
       value: attr.value,
     }));
 
-    return NextResponse.json({ success: true, body });
+    const pics = [];
+    const picEntries = Array.from(formData.entries()).filter(([key]) => key.startsWith('pics['));
+    for (const [, file] of picEntries) {
+      pics.push(file)
+    }
+
+    const bodyEntries = Array.from(formData.entries()).filter(
+      ([key]) => !key.startsWith('pics[') && !key.startsWith('attributes[')
+    );
+    const body = Object.fromEntries(bodyEntries);
+
+    body.attributes = processedAttributes;
+    
+    const response = await handleAddProduct(pics, body);
+
+    if (!response.success) {
+      throw new Error(response.error || 'Failed to process the response');
+    }
+    return NextResponse.json({
+      success: true,
+    });
   } catch (error) {
     console.log(error)
     return NextResponse.json(
-      { error: 'Failed to add products' },
+      { error: 'Failed to add product' + error.message },
       { status: 500 }
     )
   }
