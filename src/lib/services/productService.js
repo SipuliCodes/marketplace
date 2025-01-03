@@ -1,5 +1,6 @@
-import { PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
 import {
   DynamoDBDocumentClient,
   paginateQuery,
@@ -14,34 +15,77 @@ const docClient = DynamoDBDocumentClient.from(client);
 
 const s3Client = new S3Client({});
 
+const getImageUrl = async (key) => {
+  try {
+    const params = {
+      Bucket: 'marketplace-product-pics',
+      Key: key,
+    }
+
+    const signedUrl = await getSignedUrl(s3Client, new GetObjectCommand(params), { expiresIn: 3600 })
+
+    return signedUrl;
+  } catch (error) {
+    throw error;
+  }
+}
+
 export const queryProducts = async (category) => {
-  if (!category) {
-    const scanParams = {
-      TableName: 'marketplace',
-      Limit: 20,
-    };
+  try {
+    if (!category) {
+      const scanParams = {
+        TableName: 'marketplace',
+        Limit: 20,
+      };
 
-    const paginator = paginateScan({ client: docClient }, scanParams);
+      const paginator = paginateScan({ client: docClient }, scanParams);
 
-    const items = [];
-    for await (const page of paginator) {
-      items.push(...page.Items);
+      const items = [];
+      for await (const page of paginator) {
+        items.push(...page.Items);
+      }
+
+      await Promise.all(
+        items.map(async (item) => {
+          item.pics = await Promise.all(
+            item.pics.map(async (pic) => {
+              return await getImageUrl(pic);
+            })
+          );
+        })
+      );
+
+      return items;
+    } else {
+      const queryParams = {
+        TableName: 'marketplace',
+        Limit: 20,
+        KeyConditionExpression: 'category = :category',
+        ExpressionAttributeValues: { ':category': category },
+      };
+      const paginator = paginateQuery({ client: docClient }, queryParams);
+
+      const items = [];
+      for await (const page of paginator) {
+        items.push(...page.Items);
+      }
+
+      items.pics = await Promise.all(
+        items.map(
+          async (item) => {
+            await Promise.all(
+              item.pics.map(async (pic) => {
+                return await getImageUrl(pic);
+              })
+            )
+          }
+        )
+      );
+
+      return items;
     }
-    return items;
-  } else {
-    const queryParams = {
-      TableName: 'marketplace',
-      Limit: 20,
-      KeyConditionExpression: 'category = :category',
-      ExpressionAttributeValues: { ':category': category },
-    };
-    const paginator = paginateQuery({ client: docClient }, queryParams);
-
-    const items = [];
-    for await (const page of paginator) {
-      items.push(...page.Items);
-    }
-    return items;
+  } catch (error) {
+    console.log(error);
   }
 };
 

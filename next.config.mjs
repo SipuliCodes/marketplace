@@ -4,10 +4,7 @@ const nextConfig = {
     remotePatterns: [
       {
         protocol: 'https',
-        hostname: 'picsum.photos',
-        port: '',
-        pathname: '/200/300*',
-        search: '',
+        hostname: 'marketplace-product-pics.s3.eu-north-1.amazonaws.com',
       },
     ],
   },
